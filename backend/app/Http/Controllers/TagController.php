@@ -12,6 +12,16 @@ class TagController extends Controller
     public function list()
 	{
 		return response()->json(Tag::all());
+
+          // ==================================================
+       // Pour récupérer les movies avec leurs catégories
+		// J'utilise "with" pour demander les films avec leur catégories
+		// Je ne peux plus utiliser la fonction all() -> renvoie une erreur
+		// Il faut utiliser la fonction get()
+		$tags = Tag::with('category')->get();
+
+		Log::info(DB::getQueryLog());
+        // =================================================
 	}
 
 	public function show($id)
@@ -101,5 +111,30 @@ class TagController extends Controller
 			// 500 internal error
 			return response(null, 500);
 		}
-	}
+	};
+// **************
+// ==== TAGS ====
+// **************
+
+
+
+    taskElement.remove()
+}
+    // Pour récupérer les tags avec leurs catégories
+        // J'utilise "with" pour demander les tags avec leur catégories
+        // Je ne peux plus utiliser la fonction all() -> renvoie une erreur
+        // Il faut utiliser la fonction get()
+        $tags = Tag::with('category')->get();
+
+  Log::info(DB::getQueryLog());
+
+  // Envoyer en réponse la liste des tasks
+  return response()->json($tags);
+
+
+public function show($id)
+{
+  DB::enableQueryLog();
+
+  $tag = Tag::with('category')->find($id);
 }

@@ -18,6 +18,16 @@ class TaskController extends Controller
         // Active les logs pour toutes les interractions avec la BDD
         DB::enableQueryLog();
 
+       // ==================================================
+       // Pour récupérer les movies avec leurs catégories
+		// J'utilise "with" pour demander les films avec leur catégories
+		// Je ne peux plus utiliser la fonction all() -> renvoie une erreur
+		// Il faut utiliser la fonction get()
+		$tasks = Task::with('category')->get();
+
+		Log::info(DB::getQueryLog());
+        // =================================================
+
         // all -> equivalent du find all
         $tasks = Task::all();
 
@@ -221,4 +231,29 @@ class TaskController extends Controller
             return response(null, 500);
         }
     }
+
+// **************
+// ==== TASKS ====
+// **************
+
+
+
+      // Pour récupérer les taches avec leurs catégories
+        // J'utilise "with" pour demander les taches avec leur catégories
+        // Je ne peux plus utiliser la fonction all() -> renvoie une erreur
+        // Il faut utiliser la fonction get()
+        $tasks = Task::with('category')->get();
+
+  Log::info(DB::getQueryLog());
+
+  $task = Task::with('category')->find($id);
+
+  // Envoyer en réponse la liste des tasks
+  return response()->json($tasks);
+}
+
+public function show($id)
+{
+  DB::enableQueryLog();
+
 }

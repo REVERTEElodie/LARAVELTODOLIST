@@ -98,3 +98,55 @@ function createEditButton() {
 
 	return editButton
 }
+
+
+
+// Ajouter un gestionnaire d'événement "click" à chaque bouton "poubelle"
+const trashButtons = document.querySelectorAll('.trash-button');
+
+trashButtons.forEach(trashButton => {
+    trashButton.addEventListener('click', function(event) {
+        // Implémenter la logique de suppression
+        const taskItem = event.target.closest('li');
+        if (taskItem) {
+            taskItem.remove();
+        }
+    });
+});
+
+// Lors de la création de l'élément tâche, créer un bouton "poubelle" et ajouter un événement de suppression
+function createTaskElement(taskContent) {
+    const taskItem = document.createElement('li');
+    taskItem.textContent = taskContent;
+
+    const trashButton = document.createElement('button');
+    trashButton.textContent = 'Supprimer';
+    trashButton.classList.add('trash-button');
+    trashButton.addEventListener('click', function(event) {
+        // Appeler la méthode de suppression
+        const taskItem = event.target.closest('li');
+        if (taskItem) {
+            taskItem.remove();
+        }
+    });
+
+	async function updateTaskList() {
+
+		// 1. récupérer la liste des taches
+		const tasks = await getTaskList()
+	
+		const taskList = document.querySelector('.tasklist')
+	
+		// 2. Pour chaque tache, l'insérer dans la BDD
+		for (const task of tasks) {
+			const taskElement = createTaskElement(task)
+			taskList.append(taskElement)
+		}
+	}
+
+    taskItem.appendChild(trashButton);
+    // Ajouter taskItem à la liste des tâches sur la page
+    // document.querySelector('#taskList').appendChild(taskItem);
+
+
+}

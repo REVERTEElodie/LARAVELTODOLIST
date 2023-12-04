@@ -6,6 +6,8 @@ async function init() {
 	flushTaskList()
 
 	updateTaskList()
+
+	
 }
 
 document.addEventListener('DOMContentLoaded', init)
