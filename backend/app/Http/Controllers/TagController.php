@@ -3,111 +3,103 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tag;
-use App\Http\Controllers\Controller;
-
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class TagController extends Controller
-
 {
-public function list() {
+    public function list()
+	{
+		return response()->json(Tag::all());
+	}
 
-    $tags = Tag::all();
+	public function show($id)
+	{
+		$movie = Tag::find($id);
 
-    return response()->json($tags);
+		if (null == $movie) {
+			return response(null, 404);
+		}
 
+		return response()->json($movie);
+	}
+
+	public function delete($id)
+	{
+		$tag = Tag::find($id);
+
+		if (null == $tag) {
+			// 404 ressource not found
+			return response(null, 404);
+		}
+
+		if ($tag->delete()) {
+			// 204 delete ok, response without content
+			return response(null, 204);
+		} else {
+			// 500 internal server error
+			return response(null, 500);
+		}
+	}
+
+	public function create(Request $request)
+	{
+		// Validation des donnée en input
+		// https://laravel.com/docs/10.x/validation
+		$validator = Validator::make($request->input(), [
+			'name' => ['required', 'filled'],
+		]);
+
+		// En cas d'échec de validation des input
+		if ($validator->fails()) {
+			// 422 input data are incorrect
+			return response()->json($validator->errors(), 422);
+		}
+
+		$name = $request->input('name');
+
+		$tag = new Tag();
+		$tag->name = $name;
+
+		if ($tag->save()) {
+			// 201 creation ok
+			return response($tag, 201);
+		} else {
+			// 500 internal error
+			return response(null, 500);
+		}
+	}
+
+	public function update(Request $request, $id)
+	{
+		// Validation des donnée en input
+		// https://laravel.com/docs/10.x/validation
+		$validator = Validator::make($request->input(), [
+			'name' => ['required', 'filled'],
+		]);
+
+		// En cas d'échec de validation des input
+		if ($validator->fails()) {
+			// 422 input data are incorrect
+			return response()->json($validator->errors(), 422);
+		}
+
+		$tag = Tag::find($id);
+		if (null === $tag) {
+			// ressource not found
+			return response(null, 404);
+		}
+
+		$name = $request->input('name');
+		$tag->name = $name;
+
+		if ($tag->save()) {
+			// 201 creation ok
+			return response($tag, 200);
+		} else {
+			// 500 internal error
+			return response(null, 500);
+		}
+	}
 }
-
-public function show($id){
-
-    // Active les logs pour toutes les interractions avec la BDD
-
-    DB::enableQueryLog();
-
-    $tag = Tag::find($id);
-
-   // Log : enregistre une trace de ce qu'il se passe dans mon serveur
-   //DB::getQueryLog() -> retourne la derniere requete SQL executée
-   //==> garde une trace de la derniere requete SQL
-   // dans le fichier /storage/logs/laravel.log
-
-    Log::debug(DB::getQueryLog());
-
-    if(null == $tag){
-        return response(null, 404);
-
-    return response()->json($tag);
-}
-}
-
-public function update($id){
-
-    // chercher le tag a mettre à jour
-    $tag = Tag::find($id);
-
-    //si le tag n existe pas en BDD
-    // renvoyer 404
-    if(null ==$tag) {
-        return response(null, 404);
-    }
-
-    if($tag->update()) {
-       // operation ok renvoie le code 204
-        return response(null, 204);
-    } else {
-       // operation a echoué, renvoie le code 500 internal error
-        return response(null, 500);
-    }
-}
-
-public function delete($id){
-
-    // chercher le tag a supprimer
-    $tag = Tag::find($id);
-
-    //si le tag n existe pas en BDD
-    // renvoyer 404
-    if(null ==$tag) {
-        return response(null, 404);
-    }
-
-    if($tag->delete()) {
-       // operation ok renvoie le code 204
-        return response(null, 204);
-    } else {
-       // operation a echoué, renvoie le code 500 internal error
-        return response(null, 500);
-    }
-}
-
-
-
-
-
-//requete HTTP POST
-public function create(Request $request) {
-
-// créer un nouvel objet du model tag
-$tag = new Tag();
-
-//récupérer les données en POST
-$title = $request->input('title');
-
-//modifier l'objet tag avec le title de POST
-$tag->title = $title;
-
-//enregistre en BDD
-if($tag->save()) {
-
-// enregistrement ok renvoi le code 201
-return response($tag, 201);
-} else {
-
-// enregistrement a echoué
-// renvoi le code erreur 500
-return response(null, 500);
-}
-
-}
-}
-// active les logs de la BDD
-DB::enableQueryLog();
