@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
@@ -13,18 +15,30 @@ class CategoryController extends Controller
 
 	public function list()
 	{
-		return response()->json(Category::all());
+		DB::enableQueryLog();
+
+        // Récupérer toutes les catégories et leurs taches
+		$categories = Category::with('tasks')->get();
+
+		Log::info(DB::getQueryLog());
+
+		return response()->json($categories);
 	}
 
 	public function show($id)
 	{
-		$movie = Category::find($id);
+		DB::enableQueryLog();
 
-		if (null == $movie) {
+        // Récupérer une catégorie et ses taches associées
+		$category = Category::with('tasks')->find($id);
+
+		Log::info(DB::getQueryLog());
+
+		if (null == $category) {
 			return response(null, 404);
 		}
 
-		return response()->json($movie);
+		return response()->json($category);
 	}
 
 	public function delete($id)

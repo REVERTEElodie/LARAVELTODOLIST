@@ -2,21 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Category extends Model
-{
-    public function Tasks(): HasMany
-    {
-        return $this->hasMany(Task::class);
+class Category extends Model {
 
-    }
-
-    public function Tags(): HasMany
-    {
-        return $this->hasMany(Task::class);
-
-    }
+	/**
+	 * One Category Has Many Task
+	 *
+	 * @return HasMany
+	 */
+	public function tasks(): HasMany
+	{
+		return $this->hasMany(Task::class);
+	}
 }

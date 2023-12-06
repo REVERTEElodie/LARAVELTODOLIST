@@ -12,24 +12,16 @@ use Illuminate\Support\Facades\Validator;
 
 class TaskController extends Controller
 {
-
     public function list()
     {
         // Active les logs pour toutes les interractions avec la BDD
         DB::enableQueryLog();
 
-       // ==================================================
-       // Pour récupérer les movies avec leurs catégories
-		// J'utilise "with" pour demander les films avec leur catégories
-		// Je ne peux plus utiliser la fonction all() -> renvoie une erreur
-		// Il faut utiliser la fonction get()
-		$tasks = Task::with('category')->get();
-
-		Log::info(DB::getQueryLog());
-        // =================================================
-
         // all -> equivalent du find all
-        $tasks = Task::all();
+        // $tasks = Task::all();
+
+        // Avec with() il faut utiliser la fonction get() et non plus all()
+		$tasks = Task::with('category')->get();
 
         // Log : enregistre une trace de ce qu'il se passe dans mon serveur
         // DB::getQueryLog() -> retourne la dernière requete SQL executée
@@ -50,8 +42,7 @@ class TaskController extends Controller
         // Active les logs pour toutes les interractions avec la BDD
         DB::enableQueryLog();
 
-        // all -> equivalent du find all
-        $task = Task::find($id);
+		$task = Task::with('category')->find($id);
 
         // Log : enregistre une trace de ce qu'il se passe dans mon serveur
         // DB::getQueryLog() -> retourne la dernière requete SQL executée
@@ -154,7 +145,13 @@ class TaskController extends Controller
             // renvoie l'objet $task avec le code HTTP 201
             // https://www.rfc-editor.org/rfc/rfc9110.html#name-post
             // l'id de l'objet $task a été mis à jour par la fonction save()
-            return response($task, 201);
+
+            // Récupérer la nouvelle tache qui vient d'etre enregistré
+            // AVEC les données de sa catégorie et revoyer tout ça en réponse
+            // à la requete POST
+            $newTask = Task::with('category')->find($task->id);
+
+            return response($newTask, 201);
         } else {
             // l'enregistrement a échoué => erreur interne du serveur
             // renvoi le code d'erreur 500
@@ -231,29 +228,4 @@ class TaskController extends Controller
             return response(null, 500);
         }
     }
-
-// **************
-// ==== TASKS ====
-// **************
-
-
-
-      // Pour récupérer les taches avec leurs catégories
-        // J'utilise "with" pour demander les taches avec leur catégories
-        // Je ne peux plus utiliser la fonction all() -> renvoie une erreur
-        // Il faut utiliser la fonction get()
-        $tasks = Task::with('category')->get();
-
-  Log::info(DB::getQueryLog());
-
-  $task = Task::with('category')->find($id);
-
-  // Envoyer en réponse la liste des tasks
-  return response()->json($tasks);
-}
-
-public function show($id)
-{
-  DB::enableQueryLog();
-
 }

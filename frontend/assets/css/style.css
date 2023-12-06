@@ -306,3 +306,7 @@ form input[type=text]:focus {
   position: absolute;
   width: 1px;
 }
+
+.tasklist li em {
+	padding: 1rem;
+}

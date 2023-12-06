@@ -2,32 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Task extends Model
-{
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(Category::class);
-    }
+class Task extends Model {
 
-
-    
-    function handleDeleteTask(event) {
-
-        const deleteButton = event.currentTarget
-
-        const taskElement = deleteButton.closest('li')
-
-        const taskId = taskElement.dataset.id
-        console.log(taskId)
-
-        const url = `${API.endpoint}/${taskId}`
-        fetch (url, {
-            method: 'DELETE'
-        } );
-
-        taskElement.remove()
-    }
+    /**
+	 * One Task Belongs To One Category
+	 *
+	 * @return BelongsTo
+	 */
+	public function category(): BelongsTo
+	{
+		return $this->belongsTo(Category::class);
+	}
 }
+
+
+
+
